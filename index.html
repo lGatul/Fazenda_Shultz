@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculadora de Produção - Fazenda RP</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+
+:root{
+  --bg:#120b07;
+  --card:#1b120c;
+  --accent:#cfa45d;
+  --accent2:#7a4a1e;
+  --text:#f3e8d3;
+  --muted:#bda88a;
+  --border:#3a2414;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Cinzel', serif;
+}
+
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#2a1a10,#120b07 70%);
+  color:var(--text);
+}
+
+header{
+  padding:24px;
+  text-align:center;
+  border-bottom:2px solid var(--border);
+  background:linear-gradient(180deg,#1b120c,#120b07);
+}
+
+header h1{
+  margin:0;
+  font-size:30px;
+  color:var(--accent);
+  letter-spacing:2px;
+}
+
+header p{
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.container{
+  max-width:1300px;
+  margin:0 auto;
+  padding:24px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:linear-gradient(180deg,#1c120c,#140d08);
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:0 15px 35px rgba(0,0,0,.45);
+}
+
+.card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:10px;
+  border:2px solid var(--border);
+  background:#000;
+}
+
+.card h3{
+  margin:0;
+  font-size:20px;
+  color:var(--accent);
+}
+
+.info{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.input-group{
+  display:flex;
+  gap:8px;
+  margin-top:6px;
+}
+
+.input-group input{
+  flex:1;
+  padding:10px;
+  border-radius:8px;
+  border:2px solid var(--border);
+  background:#0d0704;
+  color:var(--text);
+  font-size:14px;
+}
+
+.input-group button{
+  padding:10px 14px;
+  border-radius:8px;
+  border:2px solid var(--accent2);
+  background:linear-gradient(180deg,#e0b36a,#b8843f);
+  color:#2a1606;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.materials{
+  margin-top:10px;
+  border-top:1px dashed var(--border);
+  padding-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.material{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+}
+
+.material span{
+  color:var(--muted);
+}
+
+.batch{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--accent);
+}
+
+footer{
+  text-align:center;
+  padding:18px;
+  color:var(--muted);
+  font-size:12px;
+  border-top:2px solid var(--border);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Calculadora de Produção - Fazenda RP</h1>
+  <p>Digite a quantidade final do produto. O sistema calcula automaticamente os materiais.</p>
+</header>
+
+<div class="container">
+  <div id="grid" class="grid"></div>
+</div>
+
+<footer>
+  Sistema de produção inspirado em Red Dead RP
+</footer>
+
+<script>
+
+const produtos = [
+  {
+    nome: "Saca de Trigo",
+    produz: 22,
+    imagem: "https://via.placeholder.com/400x200?text=Saca+de+Trigo",
+    materiais: [
+      { nome: "Saca", qtd: 1 },
+      { nome: "Trigo", qtd: 100 }
+    ]
+  },
+  {
+    nome: "Amido de Milho",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Amido+de+Milho",
+    materiais: [
+      { nome: "Moedor", qtd: 1 },
+      { nome: "Embalagem", qtd: 1 },
+      { nome: "Milho", qtd: 10 }
+    ]
+  },
+  {
+    nome: "Álcool Industrial",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Alcool+Industrial",
+    materiais: [
+      { nome: "Cana de açúcar", qtd: 12 },
+      { nome: "Tampa de garrafa", qtd: 5 },
+      { nome: "Garrafa de vidro vazia", qtd: 5 }
+    ]
+  },
+  {
+    nome: "Saca de Banana",
+    produz: 22,
+    imagem: "https://via.placeholder.com/400x200?text=Saca+de+Banana",
+    materiais: [
+      { nome: "Saca", qtd: 1 },
+      { nome: "Banana", qtd: 100 }
+    ]
+  },
+  {
+    nome: "Álcool Artesanal",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Alcool+Artesanal",
+    materiais: [
+      { nome: "Cana de açúcar", qtd: 10 },
+      { nome: "Tampa de garrafa", qtd: 4 },
+      { nome: "Garrafa de vidro vazia", qtd: 4 }
+    ]
+  },
+  {
+    nome: "Óleo de Milho",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Oleo+de+Milho",
+    materiais: [
+      { nome: "Água", qtd: 1 },
+      { nome: "Garrafa de vidro vazia", qtd: 3 },
+      { nome: "Milho", qtd: 10 }
+    ]
+  },
+  {
+    nome: "Levedura",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Levedura",
+    materiais: [
+      { nome: "Água", qtd: 3 },
+      { nome: "Trigo", qtd: 2 },
+      { nome: "Embalagem", qtd: 2 }
+    ]
+  },
+  {
+    nome: "Cinza Vegetal",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Cinza+Vegetal",
+    materiais: [
+      { nome: "Carvão Vegetal", qtd: 8 },
+      { nome: "Moedor", qtd: 1 }
+    ]
+  },
+  {
+    nome: "Pólvora",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Polvora",
+    materiais: [
+      { nome: "Carvão vegetal", qtd: 8 },
+      { nome: "Minério de salitre", qtd: 4 },
+      { nome: "Minério de Enxofre", qtd: 7 }
+    ]
+  },
+  {
+    nome: "Fardo de Leite Integral",
+    produz: 16,
+    imagem: "https://via.placeholder.com/400x200?text=Leite+Integral",
+    materiais: [
+      { nome: "Fardo de Garrafa de vidro", qtd: 4 },
+      { nome: "Tampa de garrafa", qtd: 4 },
+      { nome: "Leite", qtd: 5 }
+    ]
+  }
+];
+
+const grid = document.getElementById('grid');
+
+function criarCards(){
+  produtos.forEach((p, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    card.innerHTML = `
+      <img src="${p.imagem}" alt="${p.nome}">
+      <h3>${p.nome}</h3>
+      <div class="info">Produz: ${p.produz} unidades por receita</div>
+      <div class="input-group">
+        <input type="number" min="1" value="1" id="qtd-${index}" />
+        <button onclick="calcular(${index})">Calcular</button>
+      </div>
+      <div class="batch" id="batch-${index}"></div>
+      <div class="materials" id="mat-${index}"></div>
+    `;
+
+    grid.appendChild(card);
+    calcular(index);
+  });
+}
+
+function calcular(index){
+  const produto = produtos[index];
+  const qtdDesejada = parseInt(document.getElementById(`qtd-${index}`).value) || 0;
+
+  const lotes = Math.ceil(qtdDesejada / produto.produz);
+  const produzido = lotes * produto.produz;
+
+  const container = document.getElementById(`mat-${index}`);
+  const batchInfo = document.getElementById(`batch-${index}`);
+
+  container.innerHTML = '';
+
+  batchInfo.innerHTML = `Receitas necessárias: <strong>${lotes}</strong> | Produção total: <strong>${produzido}</strong>`;
+
+  produto.materiais.forEach(m => {
+    const total = m.qtd * lotes;
+
+    const div = document.createElement('div');
+    div.className = 'material';
+
+    div.innerHTML = `<strong>${m.nome}</strong><span>${total}</span>`;
+
+    container.appendChild(div);
+  });
+}
+
+criarCards();
+
+</script>
+</body>
+</html>
